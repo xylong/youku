@@ -36,3 +36,29 @@ func (c *VideoController) ChannelAdvert() {
 
 	c.ServeJSON()
 }
+
+// 频道页-获取正在热播
+// @router /channel/hot [get]
+func (c *VideoController) ChannelHotList() {
+	channelId, _ := c.GetInt("channelId")
+
+	valid := validation.Validation{}
+	valid.Required(channelId, "channel_id").Message("必须指定频道")
+	valid.Min(channelId, 1, "channel_id").Message("频道错误")
+
+	if valid.HasErrors() {
+		for _, err := range valid.Errors {
+			c.Data["json"] = Fail(4001, err.Message)
+			c.ServeJSON()
+		}
+	}
+
+	num, videos, err := models.GetChannelHotList(channelId)
+	if err == nil {
+		c.Data["json"] = Success(0, "success", videos, num)
+	} else {
+		c.Data["json"] = Fail(4004, "没有相关内容~")
+	}
+
+	c.ServeJSON()
+}

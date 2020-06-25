@@ -19,6 +19,6 @@ func init() {
 
 func GetChannelAdvert(channelId int) (num int64, adverts []Advert, err error) {
 	o := orm.NewOrm()
-	o.Raw("select id, title, sub_title,img,add_time,url from advert where status=1 and channel_id=? order by sort desc limit 1", channelId).QueryRows(&adverts)
+	num, err = o.Raw("select id, title, sub_title,img,add_time,url from advert where status=1 and channel_id=? order by sort desc limit 1", channelId).QueryRows(&adverts)
 	return
 }
