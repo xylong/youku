@@ -54,6 +54,15 @@ func init() {
 
     beego.GlobalControllerRouter["youku/controllers:UserController"] = append(beego.GlobalControllerRouter["youku/controllers:UserController"],
         beego.ControllerComments{
+            Method: "Login",
+            Router: "/login/do",
+            AllowHTTPMethods: []string{"*"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["youku/controllers:UserController"] = append(beego.GlobalControllerRouter["youku/controllers:UserController"],
+        beego.ControllerComments{
             Method: "Post",
             Router: "/register/save",
             AllowHTTPMethods: []string{"post"},
