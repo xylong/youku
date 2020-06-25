@@ -20,3 +20,15 @@ func GetChannelHotList(channelId int) (num int64, videos []VideoData, err error)
 	num, err = o.Raw("select id,title,sub_title,img,img1,episodes_count,is_end,add_time from video where status=1 and is_hot=1 and channel_id=? order by episodes_update_time desc limit 9", channelId).QueryRows(&videos)
 	return
 }
+
+func GetChannelRecommendRegionList(channelId, regoinId int) (num int64, videos []VideoData, err error) {
+	o := orm.NewOrm()
+	num, err = o.Raw("select id,title,sub_title,img,img1,episodes_count,is_end,add_time from video where status=1 and is_recommend=1 and channel_id=? and region_id=? order by episodes_update_time desc limit 9", channelId, regoinId).QueryRows(&videos)
+	return
+}
+
+func GetChannelRecommendTypeList(channelId, rtypeId int) (num int64, videos []VideoData, err error) {
+	o := orm.NewOrm()
+	num, err = o.Raw("select id,title,sub_title,img,img1,episodes_count,is_end,add_time from video where status=1 and is_recommend=1 and channel_id=? and type_id=? order by episodes_update_time desc limit 9", channelId, rtypeId).QueryRows(&videos)
+	return
+}
