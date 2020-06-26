@@ -7,6 +7,24 @@ import (
 
 func init() {
 
+    beego.GlobalControllerRouter["youku/controllers:BaseController"] = append(beego.GlobalControllerRouter["youku/controllers:BaseController"],
+        beego.ControllerComments{
+            Method: "ChannelRegion",
+            Router: "/channel/region",
+            AllowHTTPMethods: []string{"*"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["youku/controllers:BaseController"] = append(beego.GlobalControllerRouter["youku/controllers:BaseController"],
+        beego.ControllerComments{
+            Method: "ChannelType",
+            Router: "/channel/type",
+            AllowHTTPMethods: []string{"*"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["youku/controllers:ObjectController"] = append(beego.GlobalControllerRouter["youku/controllers:ObjectController"],
         beego.ControllerComments{
             Method: "Post",
@@ -102,6 +120,15 @@ func init() {
             Method: "GetChannelRecommendTypeList",
             Router: "/channel/recommend/type",
             AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["youku/controllers:VideoController"] = append(beego.GlobalControllerRouter["youku/controllers:VideoController"],
+        beego.ControllerComments{
+            Method: "ChannelVideo",
+            Router: "/channel/video",
+            AllowHTTPMethods: []string{"*"},
             MethodParams: param.Make(),
             Filters: nil,
             Params: nil})

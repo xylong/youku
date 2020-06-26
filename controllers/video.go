@@ -12,13 +12,14 @@ type VideoController struct {
 	beego.Controller
 }
 
+// ChannelAdvert 广告
 // @router /channel/advert [*]
 func (c *VideoController) ChannelAdvert() {
-	channelId, _ := c.GetInt("channelId")
+	channelID, _ := c.GetInt("channelId")
 
 	valid := validation.Validation{}
-	valid.Required(channelId, "channel_id").Message("频道不能为空")
-	valid.Min(channelId, 1, "channel_id").Message("频道错误")
+	valid.Required(channelID, "channel_id").Message("频道不能为空")
+	valid.Min(channelID, 1, "channel_id").Message("频道错误")
 
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
@@ -27,7 +28,7 @@ func (c *VideoController) ChannelAdvert() {
 		}
 	}
 
-	num, videos, err := models.GetChannelAdvert(channelId)
+	num, videos, err := models.GetChannelAdvert(channelID)
 	if err == nil {
 		c.Data["json"] = Success(0, "success", videos, num)
 	} else {
@@ -37,14 +38,14 @@ func (c *VideoController) ChannelAdvert() {
 	c.ServeJSON()
 }
 
-// 频道页-获取正在热播
+// ChannelHotList 频道页-获取正在热播
 // @router /channel/hot [get]
 func (c *VideoController) ChannelHotList() {
-	channelId, _ := c.GetInt("channelId")
+	channelID, _ := c.GetInt("channelId")
 
 	valid := validation.Validation{}
-	valid.Required(channelId, "channel_id").Message("必须指定频道")
-	valid.Min(channelId, 1, "channel_id").Message("频道错误")
+	valid.Required(channelID, "channel_id").Message("必须指定频道")
+	valid.Min(channelID, 1, "channel_id").Message("频道错误")
 
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
@@ -53,7 +54,7 @@ func (c *VideoController) ChannelHotList() {
 		}
 	}
 
-	num, videos, err := models.GetChannelHotList(channelId)
+	num, videos, err := models.GetChannelHotList(channelID)
 	if err == nil {
 		c.Data["json"] = Success(0, "success", videos, num)
 	} else {
@@ -63,17 +64,17 @@ func (c *VideoController) ChannelHotList() {
 	c.ServeJSON()
 }
 
-// 频道页-根据地区获取推荐的视频
+// ChannelRecommendList 频道页-根据地区获取推荐的视频
 // @router /channel/recommend/region [get]
 func (c *VideoController) ChannelRecommendList() {
-	channelId, _ := c.GetInt("channelId")
-	regionId, _ := c.GetInt("regionId")
+	channelID, _ := c.GetInt("channelId")
+	regionID, _ := c.GetInt("regionId")
 
 	valid := validation.Validation{}
-	valid.Required(channelId, "channel_id").Message("必须指定频道")
-	valid.Min(channelId, 1, "channel_id").Message("频道错误")
-	valid.Required(regionId, "region_id").Message("必须指定频道地区")
-	valid.Min(regionId, 1, "region_id").Message("地区错误")
+	valid.Required(channelID, "channel_id").Message("必须指定频道")
+	valid.Min(channelID, 1, "channel_id").Message("频道错误")
+	valid.Required(regionID, "region_id").Message("必须指定频道地区")
+	valid.Min(regionID, 1, "region_id").Message("地区错误")
 
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
@@ -82,7 +83,7 @@ func (c *VideoController) ChannelRecommendList() {
 		}
 	}
 
-	num, videos, err := models.GetChannelRecommendRegionList(channelId, regionId)
+	num, videos, err := models.GetChannelRecommendRegionList(channelID, regionID)
 	if err == nil {
 		c.Data["json"] = Success(0, "success", videos, num)
 	} else {
@@ -92,7 +93,7 @@ func (c *VideoController) ChannelRecommendList() {
 	c.ServeJSON()
 }
 
-// 频道页-根据类型获取视频
+// GetChannelRecommendTypeList 频道页-根据类型获取视频
 // @router /channel/recommend/type [get]
 func (c *VideoController) GetChannelRecommendTypeList() {
 	channelID, _ := c.GetInt("channelId")
@@ -112,6 +113,36 @@ func (c *VideoController) GetChannelRecommendTypeList() {
 	}
 
 	num, videos, err := models.GetChannelRecommendTypeList(channelID, typeID)
+	if err == nil {
+		c.Data["json"] = Success(0, "success", videos, num)
+	} else {
+		c.Data["json"] = Fail(4004, "没有相关内容")
+	}
+
+	c.ServeJSON()
+}
+
+// ChannelVideo 获取视频
+// @router /channel/video [*]
+func (c *VideoController) ChannelVideo() {
+	p := models.VideoParam{}
+	p.ChannelID, _ = c.GetInt("channelId")
+	p.RegionID, _ = c.GetInt("regionId")
+	p.TypeID, _ = c.GetInt("typeId")
+	p.End = c.GetString("end")
+	p.Sort = c.GetString("sort")
+	p.Limit, _ = c.GetInt("limit")
+	p.Offset, _ = c.GetInt("offset")
+
+	valid := validation.Validation{}
+	if valid.HasErrors() {
+		for _, err := range valid.Errors {
+			c.Data["json"] = Fail(4001, err.Message)
+			c.ServeJSON()
+		}
+	}
+
+	num, videos, err := models.GetChannelVideoList(&p)
 	if err == nil {
 		c.Data["json"] = Success(0, "success", videos, num)
 	} else {
