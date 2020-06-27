@@ -126,3 +126,17 @@ func GetVideoEpisodesList(id int) (num int64, episodes []Episode, err error) {
 	num, err = o.Raw("select id,title,num,play_url,comment,add_time from video_episodes where video_id=? and status=1 order by num asc", id).QueryRows(&episodes)
 	return
 }
+
+// GetChannelTop 排行榜
+func GetChannelTop(channelId int) (num int64, videos []VideoData, err error) {
+	o := orm.NewOrm()
+	num, err = o.Raw("select id,title,sub_title,img,img1,add_time,episodes_count,is_end from video where status=1 and channel_id=? order by comment desc limit 10", channelId).QueryRows(&videos)
+	return
+}
+
+// GetTypeTop 根据类型获取排行
+func GetTypeTop(typeID int) (num int64, videos []VideoData, err error) {
+	o := orm.NewOrm()
+	num, err = o.Raw("select id,title,sub_title,img,img1,add_time,episodes_count,is_end from video where status=1 and type_id=? order by comment desc limit 10", typeID).QueryRows(&videos)
+	return
+}

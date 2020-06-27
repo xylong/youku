@@ -88,6 +88,24 @@ func init() {
             Filters: nil,
             Params: nil})
 
+    beego.GlobalControllerRouter["youku/controllers:TopController"] = append(beego.GlobalControllerRouter["youku/controllers:TopController"],
+        beego.ControllerComments{
+            Method: "ChannelTop",
+            Router: "/channel/top",
+            AllowHTTPMethods: []string{"*"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["youku/controllers:TopController"] = append(beego.GlobalControllerRouter["youku/controllers:TopController"],
+        beego.ControllerComments{
+            Method: "TypeTop",
+            Router: "/type/top",
+            AllowHTTPMethods: []string{"*"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["youku/controllers:UserController"] = append(beego.GlobalControllerRouter["youku/controllers:UserController"],
         beego.ControllerComments{
             Method: "Login",
