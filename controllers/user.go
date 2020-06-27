@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"github.com/astaxie/beego/validation"
 	"regexp"
+	"strconv"
+	"strings"
 	"youku/models"
 
 	"github.com/astaxie/beego"
@@ -77,4 +80,34 @@ func (u *UserController) Login() {
 		u.Data["json"] = Fail(4004, "手机号或密码错误")
 		u.ServeJSON()
 	}
+}
+
+//批量发送消息
+// @router /send/message [*]
+func (c *UserController) Send() {
+	uids := c.GetString("uids")
+	content := c.GetString("content")
+
+	valid := validation.Validation{}
+	valid.Required(uids, "uids").Message("接收人不能为空")
+	valid.Required(content, "content").Message("发送内容不能为空")
+	if valid.HasErrors() {
+		for _, err := range valid.Errors {
+			c.Data["json"] = Fail(4001, err.Message)
+			c.ServeJSON()
+		}
+	}
+
+	id, err := models.SendMsg(content)
+	if err == nil {
+		for _, v := range strings.Split(uids, ",") {
+			userID, _ := strconv.Atoi(v)
+			_ = models.Sender(userID, id)
+		}
+		c.Data["json"] = Success(0, "发送成功", "", 1)
+	} else {
+		c.Data["json"] = Fail(5000, "发送失败请联系客服~")
+	}
+
+	c.ServeJSON()
 }

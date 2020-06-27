@@ -124,6 +124,15 @@ func init() {
             Filters: nil,
             Params: nil})
 
+    beego.GlobalControllerRouter["youku/controllers:UserController"] = append(beego.GlobalControllerRouter["youku/controllers:UserController"],
+        beego.ControllerComments{
+            Method: "Send",
+            Router: "/send/message",
+            AllowHTTPMethods: []string{"*"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["youku/controllers:VideoController"] = append(beego.GlobalControllerRouter["youku/controllers:VideoController"],
         beego.ControllerComments{
             Method: "ChannelAdvert",
