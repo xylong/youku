@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"github.com/astaxie/beego"
+	"time"
 )
 
 type CommonController struct {
@@ -37,4 +38,9 @@ func MD5(s string) string {
 	h := md5.New()
 	h.Write([]byte(s + beego.AppConfig.String("md5code")))
 	return hex.EncodeToString(h.Sum(nil))
+}
+
+// DateFormat 时间戳->年-月-日
+func DateFormat(tiemStamp int64) string {
+	return time.Unix(tiemStamp, 0).Format("2006-01-02")
 }

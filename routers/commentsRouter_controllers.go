@@ -25,6 +25,24 @@ func init() {
             Filters: nil,
             Params: nil})
 
+    beego.GlobalControllerRouter["youku/controllers:CommentController"] = append(beego.GlobalControllerRouter["youku/controllers:CommentController"],
+        beego.ControllerComments{
+            Method: "List",
+            Router: "/comment/list",
+            AllowHTTPMethods: []string{"*"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["youku/controllers:CommentController"] = append(beego.GlobalControllerRouter["youku/controllers:CommentController"],
+        beego.ControllerComments{
+            Method: "Save",
+            Router: "/comment/save",
+            AllowHTTPMethods: []string{"*"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["youku/controllers:ObjectController"] = append(beego.GlobalControllerRouter["youku/controllers:ObjectController"],
         beego.ControllerComments{
             Method: "Post",

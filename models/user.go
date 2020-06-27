@@ -25,6 +25,13 @@ type User struct {
 	CreatedAt int64
 }
 
+type UserInfo struct {
+	Id      int    `json:"id"`
+	Name    string `json:"name"`
+	AddTime int64  `json:"addTime"`
+	Avatar  string `json:"avatar"`
+}
+
 func Profile(id int) (*User, error) {
 	o := orm.NewOrm()
 	user := &User{Id: id}
@@ -64,4 +71,11 @@ func IsMobileLogin(mobile, password string) (int, string) {
 		return 0, ""
 	}
 	return user.Id, user.Name
+}
+
+// GetUserInfo 用户信息
+func GetUserInfo(id int) (info UserInfo, err error) {
+	o := orm.NewOrm()
+	err = o.Raw("select id,name,add_time,avatar from user where id=? limit 1", id).QueryRow(&info)
+	return
 }
