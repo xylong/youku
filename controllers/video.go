@@ -151,3 +151,53 @@ func (c *VideoController) ChannelVideo() {
 
 	c.ServeJSON()
 }
+
+// VideoInfo 获取视频详情
+// @router /video/info [*]
+func (c *VideoController) VideoInfo() {
+	id, _ := c.GetInt("videoId")
+
+	valid := validation.Validation{}
+	valid.Required(id, "id").Message("必须指定视频")
+	valid.Min(id, 1, "id").Message("视频不存在")
+	if valid.HasErrors() {
+		for _, err := range valid.Errors {
+			c.Data["json"] = Fail(4001, err.Message)
+			c.ServeJSON()
+		}
+	}
+
+	video, err := models.GetVideoInfo(id)
+	if err == nil {
+		c.Data["json"] = Success(0, "success", video, 1)
+	} else {
+		c.Data["json"] = Fail(4004, "没有相关内容")
+	}
+
+	c.ServeJSON()
+}
+
+// VideoEpisodesList 视频剧集列表
+// @router /video/episodes/list [*]
+func (c *VideoController) VideoEpisodesList() {
+	id, _ := c.GetInt("videoId")
+
+	valid := validation.Validation{}
+	valid.Required(id, "id").Message("必须指定视频")
+	valid.Min(id, 1, "id").Message("视频不存在")
+	if valid.HasErrors() {
+		for _, err := range valid.Errors {
+			c.Data["json"] = Fail(4001, err.Message)
+			c.ServeJSON()
+		}
+	}
+
+	num, episodes, err := models.GetVideoEpisodesList(id)
+	if err == nil {
+		c.Data["json"] = Success(0, "success", episodes, num)
+	} else {
+		c.Data["json"] = Fail(4004, "没有相关内容")
+	}
+
+	c.ServeJSON()
+}

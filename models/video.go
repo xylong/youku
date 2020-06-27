@@ -4,6 +4,7 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
+// Video 视频
 type Video struct {
 	Id                 int
 	Title              string
@@ -37,6 +38,16 @@ type VideoData struct {
 	AddTime       int64
 }
 
+// Episodes 情节
+type Episode struct {
+	Id      int
+	Title   string
+	Num     int
+	PlayUrl string
+	Comment int
+	AddTime int64
+}
+
 func GetChannelHotList(channelId int) (num int64, videos []VideoData, err error) {
 	o := orm.NewOrm()
 	num, err = o.Raw("select id,title,sub_title,img,img1,episodes_count,is_end,add_time from video where status=1 and is_hot=1 and channel_id=? order by episodes_update_time desc limit 9", channelId).QueryRows(&videos)
@@ -56,6 +67,7 @@ func GetChannelRecommendTypeList(channelId, rtypeId int) (num int64, videos []Vi
 }
 
 type VideoParam struct {
+	// todo 配置详尽规则
 	ChannelID int `valid:"Required;Min(1);"`
 	RegionID  int `valid:Min(1);`
 	TypeID    int `valid:Min(1)`
@@ -65,6 +77,7 @@ type VideoParam struct {
 	Offset    int `valid:Min(1)`
 }
 
+// GetChannelVideoList 频道视频列表
 func GetChannelVideoList(p *VideoParam) (int64, []orm.Params, error) {
 	o := orm.NewOrm()
 	var videos []orm.Params
@@ -98,4 +111,18 @@ func GetChannelVideoList(p *VideoParam) (int64, []orm.Params, error) {
 
 	return num, videos, err
 
+}
+
+// GetVideoInfo 获取视频信息
+func GetVideoInfo(id int) (video Video, err error) {
+	o := orm.NewOrm()
+	err = o.Raw("select * from video where id=? limit 1", id).QueryRow(&video)
+	return
+}
+
+// GetVideoEpisodesList 剧集列表
+func GetVideoEpisodesList(id int) (num int64, episodes []Episode, err error) {
+	o := orm.NewOrm()
+	num, err = o.Raw("select id,title,num,play_url,comment,add_time from video_episodes where video_id=? and status=1 order by num asc", id).QueryRows(&episodes)
+	return
 }
