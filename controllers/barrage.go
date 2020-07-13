@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/websocket"
 	"net/http"
 	"time"
+	"youku/models"
 )
 
 var (
@@ -32,6 +33,7 @@ func (c *BarrageController) BarrageWs() {
 		conn *websocket.Conn
 		err error
 		data []byte
+		barages []models.BarrageData
 	)
 
 	if conn,err=upgrader.Upgrade(c.Ctx.ResponseWriter,c.Ctx.Request,nil);err!=nil {
@@ -44,6 +46,13 @@ func (c *BarrageController) BarrageWs() {
 		var wsData WsData
 		json.Unmarshal([]byte(data),&wsData)
 		endTime:=wsData.CurrentTime+int(time.Second*60)
+		// 获取弹幕
+		_,barages,err=models.BarrageList(wsData.EpisodesId,wsData.CurrentTime,endTime)
+		if err==nil {
+			if err=conn.WriteJSON(barages);err!=nil {
+				goto ERR
+			}	
+		}
 	}
 	ERR:
 		conn.Close()

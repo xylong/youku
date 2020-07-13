@@ -7,6 +7,15 @@ import (
 
 func init() {
 
+    beego.GlobalControllerRouter["youku/controllers:BarrageController"] = append(beego.GlobalControllerRouter["youku/controllers:BarrageController"],
+        beego.ControllerComments{
+            Method: "BarrageWs",
+            Router: "/barrage/ws",
+            AllowHTTPMethods: []string{"*"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["youku/controllers:BaseController"] = append(beego.GlobalControllerRouter["youku/controllers:BaseController"],
         beego.ControllerComments{
             Method: "ChannelRegion",
@@ -173,6 +182,15 @@ func init() {
         beego.ControllerComments{
             Method: "ChannelVideo",
             Router: "/channel/video",
+            AllowHTTPMethods: []string{"*"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["youku/controllers:VideoController"] = append(beego.GlobalControllerRouter["youku/controllers:VideoController"],
+        beego.ControllerComments{
+            Method: "UserVideo",
+            Router: "/user/video",
             AllowHTTPMethods: []string{"*"},
             MethodParams: param.Make(),
             Filters: nil,

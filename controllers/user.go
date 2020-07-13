@@ -2,10 +2,13 @@ package controllers
 
 import (
 	"github.com/astaxie/beego/validation"
+	"io/ioutil"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"youku/models"
+	"youku/utils"
 
 	"github.com/astaxie/beego"
 )
@@ -110,4 +113,27 @@ func (c *UserController) Send() {
 	}
 
 	c.ServeJSON()
+}
+
+func (c *UserController) VideoUpload() {
+	r := c.Ctx.Request
+	uid := r.FormValue("uid")
+	// 获取文件流
+	file, header, _ := r.FormFile("file")
+	// 转为二进制流
+	b, _ := ioutil.ReadAll(file)
+	// 生成文件名
+	filename := strings.Split(header.Filename, ".")
+	filename[0] = utils.GetVideoName(uid)
+	// 文件保存位置
+	fileDir := "/Users/xuyunlong/go/src/fyouku/static" + filename[0] + "." + filename[1]
+	playUrl := "/static/video/" + filename[0] + "." + filename[1]
+	err := ioutil.WriteFile(fileDir, b, os.ModePerm)
+	var title string
+	if err != nil {
+		title = Success(0, playUrl, nil, 1)
+	} else {
+		title = Fail(5000, "上传失败，请联系客服")
+	}
+	c.Ctx.WriteString(title)
 }
