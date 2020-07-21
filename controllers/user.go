@@ -1,16 +1,12 @@
 package controllers
 
 import (
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/validation"
-	"io/ioutil"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"youku/models"
-	"youku/utils"
-
-	"github.com/astaxie/beego"
 )
 
 // Operations about Users
@@ -87,17 +83,17 @@ func (u *UserController) Login() {
 
 //批量发送消息
 // @router /send/message [*]
-func (c *UserController) Send() {
-	uids := c.GetString("uids")
-	content := c.GetString("content")
+func (u *UserController) Send() {
+	uids := u.GetString("uids")
+	content := u.GetString("content")
 
 	valid := validation.Validation{}
 	valid.Required(uids, "uids").Message("接收人不能为空")
 	valid.Required(content, "content").Message("发送内容不能为空")
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
-			c.Data["json"] = Fail(4001, err.Message)
-			c.ServeJSON()
+			u.Data["json"] = Fail(4001, err.Message)
+			u.ServeJSON()
 		}
 	}
 
@@ -107,33 +103,10 @@ func (c *UserController) Send() {
 			userID, _ := strconv.Atoi(v)
 			_ = models.Sender(userID, id)
 		}
-		c.Data["json"] = Success(0, "发送成功", "", 1)
+		u.Data["json"] = Success(0, "发送成功", "", 1)
 	} else {
-		c.Data["json"] = Fail(5000, "发送失败请联系客服~")
+		u.Data["json"] = Fail(5000, "发送失败请联系客服~")
 	}
 
-	c.ServeJSON()
-}
-
-func (c *UserController) VideoUpload() {
-	r := c.Ctx.Request
-	uid := r.FormValue("uid")
-	// 获取文件流
-	file, header, _ := r.FormFile("file")
-	// 转为二进制流
-	b, _ := ioutil.ReadAll(file)
-	// 生成文件名
-	filename := strings.Split(header.Filename, ".")
-	filename[0] = utils.GetVideoName(uid)
-	// 文件保存位置
-	fileDir := "/Users/xuyunlong/go/src/fyouku/static" + filename[0] + "." + filename[1]
-	playUrl := "/static/video/" + filename[0] + "." + filename[1]
-	err := ioutil.WriteFile(fileDir, b, os.ModePerm)
-	var title string
-	if err != nil {
-		title = Success(0, playUrl, nil, 1)
-	} else {
-		title = Fail(5000, "上传失败，请联系客服")
-	}
-	c.Ctx.WriteString(title)
+	u.ServeJSON()
 }

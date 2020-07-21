@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/astaxie/beego/orm"
+	"time"
 )
 
 // Video 视频
@@ -9,18 +10,19 @@ type Video struct {
 	Id                 int
 	Title              string
 	SubTitle           string
+	AddTime            int64
 	Img                string
 	Img1               string
 	EpisodesCount      int
 	IsEnd              int
-	AddTime            int64
 	ChannelId          int
 	Status             int
 	RegionId           int
 	TypeId             int
-	Sort               int
-	EpisodesUpdateTime int
+	EpisodesUpdateTime int64
 	Comment            int
+	UserId             int
+	IsRecommend        int
 }
 
 func init() {
@@ -31,21 +33,23 @@ type VideoData struct {
 	Id            int
 	Title         string
 	SubTitle      string
+	AddTime       int64
 	Img           string
 	Img1          string
 	EpisodesCount int
 	IsEnd         int
-	AddTime       int64
+	Comment       int
 }
 
 // Episodes 情节
 type Episode struct {
-	Id      int
-	Title   string
-	Num     int
-	PlayUrl string
-	Comment int
-	AddTime int64
+	Id            int
+	Title         string
+	AddTime       int64
+	Num           int
+	PlayUrl       string
+	Comment       int
+	AliyunVideoId string
 }
 
 func GetChannelHotList(channelId int) (num int64, videos []VideoData, err error) {
@@ -142,8 +146,34 @@ func GetTypeTop(typeID int) (num int64, videos []VideoData, err error) {
 }
 
 // GetUserVideo 获取用户视频
-func GetUserVideo(uid int) (num int64,videos []VideoData,err error) {
-	o:=orm.NewOrm()
-	num,err=o.Raw("select id,title,sub_title,img,img1,add_time,episodes_count,is_end from video where user_id=? order by add_time desc",uid).QueryRows(&videos)
+func GetUserVideo(uid int) (num int64, videos []VideoData, err error) {
+	o := orm.NewOrm()
+	num, err = o.Raw("select id,title,sub_title,img,img1,add_time,episodes_count,is_end from video where user_id=? order by add_time desc", uid).QueryRows(&videos)
 	return
+}
+
+func SaveVideo(title, subTitile, playUrl, aliyunVideoId string, channelId, regionId, typeId, userId int) error {
+	o := orm.NewOrm()
+	t := time.Now().Unix()
+	video := Video{
+		Title:              title,
+		SubTitle:           subTitile,
+		Img:                "",
+		Img1:               "",
+		EpisodesCount:      1,
+		IsEnd:              1,
+		AddTime:            0,
+		ChannelId:          channelId,
+		Status:             1,
+		RegionId:           regionId,
+		TypeId:             typeId,
+		EpisodesUpdateTime: t,
+		Comment:            0,
+		UserId:             userId,
+	}
+	id, err := o.Insert(&video)
+	if err == nil {
+		o.Raw("INSERT INTO video_episodes (title,add_time,num,video_id,play_url,status,comment,aliyun_video_id) VALUES (?,?,?,?,?,?,?,?)", subTitile, t, 1, id, playUrl, 1, 0, aliyunVideoId).Exec()
+	}
+	return err
 }

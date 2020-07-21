@@ -218,3 +218,30 @@ func (c *VideoController) UserVideo() {
 	}
 	c.ServeJSON()
 }
+
+// 保存用户上传视频信息
+// @router /video/save [*]
+func (c VideoController) VideoSave() {
+	playUrl := c.GetString("playUrl")
+	title := c.GetString("title")
+	subTitle := c.GetString("subTitle")
+	channelId, _ := c.GetInt("channelId")
+	typeId, _ := c.GetInt("typeId")
+	regionId, _ := c.GetInt("regionId")
+	uid, _ := c.GetInt("uid")
+	if uid == 0 {
+		c.Data["json"] = Fail(4001, "请先登录")
+		c.ServeJSON()
+	}
+	if playUrl == "" {
+		c.Data["json"] = Fail(4002, "视频地址不能为空")
+		c.ServeJSON()
+	}
+	err := models.SaveVideo(title, subTitle, playUrl, "", channelId, regionId, typeId, uid)
+	if err != nil {
+		c.Data["json"] = Success(0, "success", nil, 1)
+	} else {
+		c.Data["json"] = Fail(5000, err)
+	}
+	c.ServeJSON()
+}
